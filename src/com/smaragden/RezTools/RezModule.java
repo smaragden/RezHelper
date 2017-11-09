@@ -21,6 +21,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.jetbrains.python.sdk.PythonSdkAdditionalData;
 import com.jetbrains.python.sdk.PythonSdkType;
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor;
+import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jetbrains.annotations.NonNls;
@@ -34,6 +36,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class RezModule implements ModuleComponent {
@@ -191,8 +194,19 @@ public class RezModule implements ModuleComponent {
         try {
             String name = String.valueOf(rez_info.get("name"));
             String path = String.valueOf(rez_info.get("interpreter"));
+            JSONArray dependencies = rez_info.getJSONArray("dependencies");
+            String[] paths = new String[dependencies.length()];
+            for (int i = 0; i < dependencies.length(); i++) {
+                JSONObject obj = dependencies.getJSONObject(i);
+                Iterator keys = obj.keys();
+                while(keys.hasNext()) {
+                    Object element = keys.next();
+                    paths[i] = obj.getString(element.toString());
+                }
+            }
+            System.out.println(String.join(", ", paths));
 
-            VirtualFile sdkHome =
+                VirtualFile sdkHome =
                     WriteAction.compute(() -> LocalFileSystem.getInstance().refreshAndFindFileByPath(path));
             if (sdkHome != null) {
                 final Sdk sdk = createSdk(name, PythonSdkType.getInstance(), sdkHome);
