@@ -28,9 +28,9 @@
         <!-- Add your actions here -->
     </actions>
 
-    <module-components>
+    <project-components>
         <component>
-            <implementation-class>com.smaragden.RezTools.RezModule</implementation-class>
+            <implementation-class>com.smaragden.RezTools.RezToolsComponent</implementation-class>
         </component>
-    </module-components>
+    </project-components>
 </idea-plugin>
